@@ -1,2 +1,2 @@
-# react-social-login
-react-social-login
+# social-login-hooks
+A React hooks library for social login integration

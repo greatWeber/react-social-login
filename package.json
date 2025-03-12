@@ -1,0 +1,53 @@
+{
+  "name": "react-social-login",
+  "version": "1.0.0",
+  "description": "A React hooks library for social login integration",
+  "main": "dist/social-login.umd.js",
+  "module": "dist/social-login.es.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix"
+    ]
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "social-login",
+    "authentication",
+    "oauth"
+  ],
+  "author": "xlf",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "@vitejs/plugin-react": "^4.2.0",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "globals": "^13.24.0",
+    "@commitlint/cli": "^18.0.0",
+    "@commitlint/config-conventional": "^18.0.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.0.0"
+  }
+}
