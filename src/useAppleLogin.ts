@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 
-interface AppleLoginResponse {
+export interface AppleLoginResponse {
   authorization: {
     code: string;
     id_token: string;

@@ -1,13 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
 
-interface GoogleUser {
+export interface GoogleUser {
   email: string;
   name: string;
   imageUrl: string;
   id: string;
 }
 
-interface GoogleLoginResponse {
+export interface GoogleLoginResponse {
   accessToken: string;
   user: GoogleUser;
 }

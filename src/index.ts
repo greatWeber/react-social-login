@@ -1,14 +1,8 @@
-import { FC } from 'react';
+export { useGoogleLogin } from './useGoogleLogin';
+export type { GoogleLoginResponse, GoogleUser } from './useGoogleLogin';
 
-export interface SocialLoginProps {
-  provider: 'google' | 'facebook' | 'twitter';
-  clientId: string;
-  className?: string;
-}
+export { useFacebookLogin } from './useFacebookLogin';
+export type { FacebookLoginResponse, FacebookUser } from './useFacebookLogin';
 
-export const SocialLogin: FC<SocialLoginProps> = () => {
-  // TODO: Implement social login functionality
-  return null;
-};
-
-export default SocialLogin;
+export { useAppleLogin } from './useAppleLogin';
+export type { AppleLoginResponse } from './useAppleLogin';

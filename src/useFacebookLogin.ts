@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 
-interface FacebookUser {
+export interface FacebookUser {
   id: string;
   name: string;
   email: string;
@@ -11,7 +11,7 @@ interface FacebookUser {
   };
 }
 
-interface FacebookLoginResponse {
+export interface FacebookLoginResponse {
   accessToken: string;
   user: {
     id: string;
