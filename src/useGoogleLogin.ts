@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from "react";
+import { loadScript } from "./utils/loadScript";
 
 export interface GoogleUser {
   email: string;
@@ -47,53 +48,42 @@ declare global {
 
 export const useGoogleLogin = ({
   clientId,
-  scope = 'profile email'
+  scope = "profile email",
 }: UseGoogleLoginProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const loadGoogleScript = () => {
-      const script = document.createElement('script');
-      script.src = 'https://apis.google.com/js/api.js';
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        window.gapi.load('auth2', () => {
+    const { cleanup } = loadScript(import.meta.env.VITE_GOOGLE_SDK_URL, {
+      onInit: () => {
+        window.gapi.load("auth2", () => {
           try {
             window.gapi.auth2.init({
               client_id: clientId,
-              scope
+              scope,
             });
             setIsInitialized(true);
           } catch (err) {
-            const error = err instanceof Error ? err : new Error('Failed to initialize Google Sign-In');
+            const error =
+              err instanceof Error
+                ? err
+                : new Error("Failed to initialize Google Sign-In");
             setError(error);
           }
         });
-      };
-      script.onerror = () => {
-        const err = new Error('Failed to load Google Sign-In script');
-        setError(err);
-      };
-      document.head.appendChild(script);
-    };
-
-    loadGoogleScript();
+      },
+    });
 
     return () => {
-      const script = document.querySelector('script[src*="apis.google.com/js/api.js"]');
-      if (script) {
-        document.head.removeChild(script);
-      }
+      cleanup();
       setIsInitialized(false);
     };
   }, [clientId, scope]);
 
   const signIn = useCallback(async () => {
     if (!isInitialized) {
-      throw new Error('Google Sign-In is not initialized');
+      throw new Error("Google Sign-In is not initialized");
     }
 
     try {
@@ -110,13 +100,14 @@ export const useGoogleLogin = ({
           id: profile.getId(),
           name: profile.getName(),
           email: profile.getEmail(),
-          imageUrl: profile.getImageUrl()
-        }
+          imageUrl: profile.getImageUrl(),
+        },
       };
 
       return response;
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Google Sign-In failed');
+      const error =
+        err instanceof Error ? err : new Error("Google Sign-In failed");
       setError(error);
       throw error;
     } finally {
@@ -126,7 +117,7 @@ export const useGoogleLogin = ({
 
   const signOut = useCallback(async () => {
     if (!isInitialized) {
-      throw new Error('Google Sign-In is not initialized');
+      throw new Error("Google Sign-In is not initialized");
     }
 
     try {
@@ -134,7 +125,8 @@ export const useGoogleLogin = ({
       setError(null);
       await window.gapi.auth2.signOut();
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Google Sign-Out failed');
+      const error =
+        err instanceof Error ? err : new Error("Google Sign-Out failed");
       setError(error);
       throw error;
     } finally {
@@ -147,7 +139,7 @@ export const useGoogleLogin = ({
     signOut,
     isLoading,
     error,
-    isInitialized
+    isInitialized,
   };
 };
 

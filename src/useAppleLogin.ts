@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from "react";
+import { loadScript } from "./utils/loadScript";
 
 export interface AppleLoginResponse {
   authorization: {
@@ -44,46 +45,40 @@ declare global {
 
 export const useAppleLogin = ({
   clientId,
-  scope = 'name email',
+  scope = "name email",
   redirectURI,
   state,
-  usePopup = false
+  usePopup = false,
 }: UseAppleLoginProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const loadAppleScript = () => {
-      const script = document.createElement('script');
-      script.src = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js';
-      script.async = true;
-      script.onload = () => {
-        try {
-          window.AppleID.auth.init({
-            clientId,
-            scope,
-            redirectURI,
-            state,
-            usePopup
-          });
-        } catch (err) {
-          setError(err instanceof Error ? err : new Error('Failed to initialize Apple Sign-In'));
-        }
-      };
-      script.onerror = () => {
-        const err = new Error('Failed to load Apple Sign-In script');
-        setError(err);
-      };
-      document.head.appendChild(script);
-    };
-
-    loadAppleScript();
+    const { cleanup } = loadScript(
+      import.meta.env.VITE_APPLE_SDK_URL,
+      {
+        onInit: () => {
+          try {
+            window.AppleID.auth.init({
+              clientId,
+              scope,
+              redirectURI,
+              state,
+              usePopup,
+            });
+          } catch (err) {
+            setError(
+              err instanceof Error
+                ? err
+                : new Error("Failed to initialize Apple Sign-In")
+            );
+          }
+        },
+      }
+    );
 
     return () => {
-      const script = document.querySelector('script[src*="appleid.auth.js"]');
-      if (script) {
-        document.head.removeChild(script);
-      }
+      cleanup();
     };
   }, [clientId, scope, redirectURI, state]);
 
@@ -91,11 +86,12 @@ export const useAppleLogin = ({
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await window.AppleID.auth.signIn();
       return response;
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Apple Sign-In failed');
+      const error =
+        err instanceof Error ? err : new Error("Apple Sign-In failed");
       setError(error);
       throw error;
     } finally {
@@ -106,7 +102,7 @@ export const useAppleLogin = ({
   return {
     signIn,
     isLoading,
-    error
+    error,
   };
 };
 

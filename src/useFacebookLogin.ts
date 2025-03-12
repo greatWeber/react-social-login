@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { loadScript } from "./utils/loadScript";
 
 export interface FacebookUser {
   id: string;
@@ -49,46 +50,30 @@ export const useFacebookLogin = ({
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const loadFacebookScript = () => {
-      const script = document.createElement("script");
-      script.src = "https://connect.facebook.net/en_US/sdk.js";
-      script.async = true;
-      script.defer = true;
-      script.crossOrigin = "anonymous";
-
-      window.fbAsyncInit = () => {
-        try {
-          window.FB.init({
-            appId,
-            version: "v18.0",
-          });
-          setIsInitialized(true);
-        } catch (err) {
-          const error =
-            err instanceof Error
-              ? err
-              : new Error("Failed to initialize Facebook SDK");
-          setError(error);
-        }
-      };
-
-      script.onerror = () => {
-        const err = new Error("Failed to load Facebook SDK script");
-        setError(err);
-      };
-
-      document.head.appendChild(script);
-    };
-
-    loadFacebookScript();
+    const { cleanup } = loadScript(
+      import.meta.env.VITE_FACEBOOK_SDK_URL,
+      {
+        attributes: { crossOrigin: "anonymous" },
+        onInit: () => {
+          try {
+            window.FB.init({
+              appId,
+              version: "v18.0",
+            });
+            setIsInitialized(true);
+          } catch (err) {
+            const error =
+              err instanceof Error
+                ? err
+                : new Error("Failed to initialize Facebook SDK");
+            setError(error);
+          }
+        },
+      }
+    );
 
     return () => {
-      const script = document.querySelector(
-        'script[src*="connect.facebook.net/en_US/sdk.js"]'
-      );
-      if (script) {
-        document.head.removeChild(script);
-      }
+      cleanup();
       setIsInitialized(false);
     };
   }, [appId]);
